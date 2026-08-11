@@ -1,6 +1,6 @@
 'use client';
 import {useEffect,useMemo,useState} from 'react';
-import './style.css';
+
 const data={
 'Criar Imagem':['Retrato cinematográfico de [PESSOA/PERSONAGEM], iluminação dramática, fundo [CENÁRIO], lente 85mm, profundidade de campo suave, detalhes naturais, formato [9:16/1:1/16:9].','Arte publicitária de [TEMA], título “[TEXTO]” perfeitamente legível, composição profissional, contraste forte, espaço para data e horário, formato para [WhatsApp/Instagram].','Cena bíblica de [PASSAGEM], ambiente historicamente inspirado, emoção reverente, luz volumétrica, composição épica, sem elementos modernos.','Ícone de aplicativo para [NOME], símbolo [IDEIA], divertido, simples, memorável, legível em tamanho pequeno, fundo limpo.'],
 'Criar Vídeo':['Crie um vídeo de 8 segundos sobre [TEMA]. Descreva personagem, cenário, ação, movimento de câmera, iluminação, áudio e encerramento. Sem cortes impossíveis e mantendo consistência visual.','Crie um roteiro de 30 segundos sobre [TEMA], dividido em 4 cenas de aproximadamente 8 segundos. Para cada cena informe visual, ação, câmera, fala/narração e transição, mantendo os mesmos personagens.','Crie um vídeo vertical 9:16 para Reels sobre [TEMA], com gancho nos 2 primeiros segundos, ritmo envolvente, legendas curtas e CTA final.'],
