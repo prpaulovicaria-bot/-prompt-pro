@@ -1,0 +1,1 @@
+export const metadata={title:'Prompt Pro',description:'Biblioteca de Prompts',manifest:'/manifest.webmanifest',icons:{icon:'/icon.png',apple:'/icon.png'}};export default function RootLayout({children}){return <html lang="pt-BR"><body>{children}</body></html>}
