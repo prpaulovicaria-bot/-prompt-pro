@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <main className="container">
       <header>
-        <img src="/icon.png" alt="Prompt Pro" className="logo" />
+        <img src="/../icon.png" alt="Prompt Pro" className="logo" />
         <div>
           <h1>Prompt Pro</h1>
           <p>Biblioteca de Prompts</p>
