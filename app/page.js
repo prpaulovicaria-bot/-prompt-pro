@@ -1,31 +1,256 @@
-'use client';
-import {useEffect,useMemo,useState} from 'react';
-import './style.css';
-const data={
-'Criar Imagem':['Retrato cinematográfico de [PESSOA/PERSONAGEM], iluminação dramática, fundo [CENÁRIO], lente 85mm, profundidade de campo suave, detalhes naturais, formato [9:16/1:1/16:9].','Arte publicitária de [TEMA], título “[TEXTO]” perfeitamente legível, composição profissional, contraste forte, espaço para data e horário, formato para [WhatsApp/Instagram].','Cena bíblica de [PASSAGEM], ambiente historicamente inspirado, emoção reverente, luz volumétrica, composição épica, sem elementos modernos.','Ícone de aplicativo para [NOME], símbolo [IDEIA], divertido, simples, memorável, legível em tamanho pequeno, fundo limpo.'],
-'Criar Vídeo':['Crie um vídeo de 8 segundos sobre [TEMA]. Descreva personagem, cenário, ação, movimento de câmera, iluminação, áudio e encerramento. Sem cortes impossíveis e mantendo consistência visual.','Crie um roteiro de 30 segundos sobre [TEMA], dividido em 4 cenas de aproximadamente 8 segundos. Para cada cena informe visual, ação, câmera, fala/narração e transição, mantendo os mesmos personagens.','Crie um vídeo vertical 9:16 para Reels sobre [TEMA], com gancho nos 2 primeiros segundos, ritmo envolvente, legendas curtas e CTA final.'],
-'Editar Foto':['Edite a foto preservando totalmente a fisionomia e identidade das pessoas. Altere somente [ALTERAÇÃO], mantenha proporções naturais, pele realista e iluminação coerente.','Remova [OBJETO] da foto e reconstrua o fundo naturalmente, sem modificar pessoas, roupas ou elementos não solicitados.','Melhore nitidez, exposição e equilíbrio da imagem sem alterar rostos, idade aparente ou características físicas.'],
-'Igreja & Bíblia':['Crie uma arte para reunião com o tema “[TEMA]”, baseada em [PASSAGEM], visual reverente e impactante, texto grande e legível, espaço para data, horário e endereço.','Prepare um esboço de mensagem sobre [PASSAGEM]: contexto, ideia central, 3 pontos práticos, aplicação, conclusão e dinâmica simples. Use linguagem clara e fiel ao texto bíblico.','Crie um roteiro de vídeo bíblico sobre [PASSAGEM], dividido em cenas de 8 segundos, mantendo personagens, roupas e cenário consistentes.'],
-'Redes Sociais':['Crie uma legenda para [REDE] sobre [TEMA], abertura forte, texto curto e natural, CTA e até 5 hashtags relevantes.','Crie 10 ideias de Reels sobre [NICHO], cada uma com gancho, desenvolvimento, CTA e duração sugerida.'],
-'Textos':['Reescreva o texto abaixo deixando-o claro, correto, natural e profissional, preservando minha intenção e informações: [TEXTO].','Crie uma mensagem de WhatsApp sobre [ASSUNTO], tom [AMIGÁVEL/FORMAL/URGENTE], curta e objetiva, terminando com [AÇÃO DESEJADA].'],
-'Planilhas':['Crie uma planilha para [OBJETIVO] com abas [ABAS], colunas [CAMPOS], fórmulas automáticas, validação de dados, totais, indicadores e formatação clara para celular e computador.','Analise esta necessidade: [DESCRIÇÃO]. Proponha a estrutura ideal de planilha, fórmulas, automações e painel-resumo, evitando digitação duplicada.'],
-'Criar Aplicativos':['Crie um aplicativo chamado [NOME] para [OBJETIVO]. Usuários: [QUEM]. Funções: [FUNÇÕES]. Inclua interface mobile, pesquisa, cadastro/edição, armazenamento persistente, permissões e backup.','Transforme esta ideia em especificação de aplicativo: [IDEIA]. Defina telas, navegação, dados, regras, permissões, estados vazios, validações e critérios de aceite.'],
-'Sites':['Crie um site responsivo para [NEGÓCIO/PROJETO], com páginas [PÁGINAS], identidade [ESTILO], CTA [AÇÃO], ótimo funcionamento no celular, acessibilidade e SEO básico.'],
-'Prompt Mestre':['Transforme minha ideia “[IDEIA]” em um prompt profissional. Primeiro identifique objetivo, contexto, público, formato, restrições e resultado esperado. Depois entregue um único prompt detalhado, claro e pronto para copiar.']};
-const cats=[['🎨','Criar Imagem'],['🎬','Criar Vídeo'],['📸','Editar Foto'],['⛪','Igreja & Bíblia'],['📱','Redes Sociais'],['✍️','Textos'],['📊','Planilhas'],['📲','Criar Aplicativos'],['🌐','Sites'],['🧠','Prompt Mestre']];
-export default function Home(){
- const [q,setQ]=useState(''),[open,setOpen]=useState(null),[fav,setFav]=useState([]),[mine,setMine]=useState([]),[idea,setIdea]=useState(''),[type,setType]=useState('Imagem'),[out,setOut]=useState(''),[tab,setTab]=useState('inicio');
- useEffect(()=>{try{setFav(JSON.parse(localStorage.getItem('ppFav')||'[]'));setMine(JSON.parse(localStorage.getItem('ppMine')||'[]'))}catch{}},[]);
- const saveFav=x=>{const n=fav.includes(x)?fav.filter(v=>v!==x):[...fav,x];setFav(n);localStorage.setItem('ppFav',JSON.stringify(n))};
- const filtered=useMemo(()=>cats.filter(x=>x[1].toLowerCase().includes(q.toLowerCase())||(data[x[1]]||[]).some(p=>p.toLowerCase().includes(q.toLowerCase()))),[q]);
- const copy=t=>navigator.clipboard?.writeText(t);
- const generate=()=>{if(!idea.trim())return;let extra=type==='Vídeo'?'Divida em cenas quando necessário, informando duração, ação, câmera, áudio e continuidade.':type==='Imagem'?'Defina composição, iluminação, estilo, enquadramento e proporção.':'Defina estrutura, requisitos, restrições e resultado final.';setOut(`Atue como especialista em ${type}. Minha ideia é: “${idea.trim()}”. Transforme-a em um prompt profissional, detalhado e pronto para uso. ${extra} Não invente informações essenciais; use campos [ENTRE COLCHETES] quando eu precisar completar algo.`)};
- const addMine=()=>{const t=prompt('Cole ou escreva seu prompt:');if(t?.trim()){const n=[t.trim(),...mine];setMine(n);localStorage.setItem('ppMine',JSON.stringify(n))}};
- let body;
- if(tab==='favoritos')body=<Collection title="⭐ Favoritos" items={fav} fav={fav} toggle={saveFav} copy={copy}/>;
- else if(tab==='meus')body=<><button className="primary" onClick={addMine}>＋ Criar meu prompt</button><Collection title="Meus Prompts" items={mine} fav={fav} toggle={saveFav} copy={copy}/></>;
- else if(tab==='gerador')body=<Generator {...{idea,setIdea,type,setType,out,generate,copy}}/>;
- else body=<><section className="hero"><h2>O que vamos criar hoje?</h2><p>Prompts prontos para copiar, adaptar e usar.</p><input value={q} onChange={e=>setQ(e.target.value)} placeholder="🔎 Pesquisar na biblioteca..."/></section><div className="grid">{filtered.map(([i,n])=><button key={n} onClick={()=>setOpen(n)}><b>{i}</b><span>{n}</span><small>{data[n].length} prompts →</small></button>)}</div><section className="quick" onClick={()=>setTab('gerador')}><b>✨ Gerador inteligente</b><span>Escreva uma ideia simples e receba um prompt completo.</span></section></>;
- return <main><header><img src="/icon.png"/><div><h1>Prompt Pro</h1><p>Biblioteca de Prompts</p></div></header>{body}{open&&<div className="modal" onClick={e=>e.target===e.currentTarget&&setOpen(null)}><div className="sheet"><button className="x" onClick={()=>setOpen(null)}>✕</button><Collection title={open} items={data[open]} fav={fav} toggle={saveFav} copy={copy}/></div></div>}<nav><button onClick={()=>setTab('inicio')}>🏠<em>Início</em></button><button onClick={()=>setTab('favoritos')}>⭐<em>Favoritos</em></button><button onClick={()=>setTab('gerador')}>💡<em>Gerador</em></button><button onClick={()=>setTab('meus')}>➕<em>Meus</em></button></nav></main>}
-function Collection({title,items,fav,toggle,copy}){return <section className="collection"><h2>{title}</h2>{!items.length&&<p className="empty">Nada salvo aqui ainda.</p>}{items.map((p,i)=><article key={i}><p>{p}</p><div><button onClick={()=>toggle(p)}>{fav.includes(p)?'★':'☆'} Favorito</button><button onClick={()=>copy(p)}>📋 Copiar</button></div></article>)}</section>}
-function Generator({idea,setIdea,type,setType,out,generate,copy}){return <section className="generator"><h2>✨ Gerador de Prompt</h2><p>Descreva sua ideia em poucas palavras.</p><select value={type} onChange={e=>setType(e.target.value)}>{['Imagem','Vídeo','Texto','Aplicativo','Site','Planilha','Igreja & Bíblia','Redes Sociais'].map(x=><option key={x}>{x}</option>)}</select><textarea rows="5" value={idea} onChange={e=>setIdea(e.target.value)} placeholder="Ex.: vídeo de Davi enfrentando Golias, dividido em cenas de 8 segundos"/><button className="primary" onClick={generate}>GERAR PROMPT</button>{out&&<article className="result"><p>{out}</p><button onClick={()=>copy(out)}>📋 Copiar prompt</button></article>}</section>}
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import "./style.css";
+
+const biblioteca = {
+  "🎨 Criar Imagem": [
+    "Crie uma imagem profissional sobre [TEMA], estilo cinematográfico, iluminação dramática, composição elegante, alta definição, formato [FORMATO].",
+    "Crie uma arte para redes sociais sobre [TEMA], com destaque para [TEXTO], visual moderno, profissional e impactante.",
+    "Crie uma imagem realista de [PESSOA/CENA], preservando características naturais, com cenário [CENÁRIO] e iluminação profissional.",
+    "Crie uma capa profissional para [PROJETO/APLICATIVO], usando o conceito [IDEIA], visual moderno e fácil de reconhecer."
+  ],
+
+  "🎬 Criar Vídeo": [
+    "Crie um vídeo de 8 segundos sobre [TEMA]. Cena cinematográfica, movimento natural de câmera, iluminação profissional e final impactante.",
+    "Crie um vídeo vertical 9:16 para redes sociais sobre [TEMA], dividido em cenas curtas, com ritmo envolvente e aparência profissional.",
+    "Transforme esta ideia em um roteiro de vídeo: [IDEIA]. Divida em cenas de 8 segundos, mantendo continuidade entre todas as cenas."
+  ],
+
+  "📸 Editar Foto": [
+    "Edite esta foto preservando totalmente a fisionomia da pessoa. Altere somente [ALTERAÇÃO], mantendo aparência natural e realista.",
+    "Melhore iluminação, nitidez e qualidade desta fotografia sem modificar rosto, corpo ou características pessoais.",
+    "Remova [OBJETO] desta fotografia e reconstrua naturalmente o fundo, sem alterar as pessoas presentes."
+  ],
+
+  "⛪ Igreja & Bíblia": [
+    "Crie uma mensagem para reunião sobre [TEMA], baseada em [PASSAGEM BÍBLICA], com introdução, explicação, aplicação prática e conclusão.",
+    "Crie uma arte cristã sobre [TEMA], usando [VERSÍCULO], visual impactante, letras grandes e excelente legibilidade.",
+    "Prepare um estudo bíblico sobre [TEMA], explicando contexto, significado espiritual, exemplos e aplicação para os dias atuais."
+  ],
+
+  "📱 Redes Sociais": [
+    "Crie uma legenda para [REDE SOCIAL] sobre [TEMA], com linguagem envolvente, chamada para ação e hashtags relevantes.",
+    "Crie 5 ideias de publicações sobre [TEMA], cada uma com título, legenda e sugestão visual."
+  ],
+
+  "✍️ Textos": [
+    "Reescreva o texto abaixo deixando-o claro, profissional e natural, preservando o significado: [TEXTO].",
+    "Corrija ortografia, pontuação e clareza deste texto sem alterar sua mensagem principal: [TEXTO]."
+  ],
+
+  "📊 Planilhas": [
+    "Crie uma planilha para [OBJETIVO], com colunas [DADOS], fórmulas automáticas, totais, organização mensal e visual profissional.",
+    "Planeje uma planilha de controle de [TEMA], incluindo cálculos automáticos, filtros, resumo e indicadores."
+  ],
+
+  "📲 Criar Aplicativos": [
+    "Crie um aplicativo chamado [NOME], destinado a [OBJETIVO]. Inclua cadastro, pesquisa, edição, organização dos dados e interface responsiva.",
+    "Planeje um aplicativo para [IDEIA], descrevendo telas, funções, banco de dados, usuários e fluxo completo."
+  ],
+
+  "🌐 Sites": [
+    "Crie um site responsivo para [NEGÓCIO/PROJETO], com página inicial, informações, contato, design moderno e funcionamento perfeito no celular."
+  ],
+
+  "🧠 Prompt Mestre": [
+    "Transforme minha ideia em um prompt profissional e completo. Minha ideia é: [IDEIA]. Acrescente contexto, objetivo, estilo, detalhes técnicos e resultado esperado."
+  ]
+};
+
+export default function Home() {
+  const [busca, setBusca] = useState("");
+  const [categoria, setCategoria] = useState(null);
+  const [favoritos, setFavoritos] = useState([]);
+  const [tela, setTela] = useState("inicio");
+  const [ideia, setIdeia] = useState("");
+  const [resultado, setResultado] = useState("");
+  const [meus, setMeus] = useState([]);
+
+  useEffect(() => {
+    try {
+      setFavoritos(JSON.parse(localStorage.getItem("favoritos")) || []);
+      setMeus(JSON.parse(localStorage.getItem("meusPrompts")) || []);
+    } catch {}
+  }, []);
+
+  function favoritar(prompt) {
+    const novos = favoritos.includes(prompt)
+      ? favoritos.filter((p) => p !== prompt)
+      : [...favoritos, prompt];
+
+    setFavoritos(novos);
+    localStorage.setItem("favoritos", JSON.stringify(novos));
+  }
+
+  function copiar(texto) {
+    navigator.clipboard.writeText(texto);
+    alert("Prompt copiado!");
+  }
+
+  function gerar() {
+    if (!ideia.trim()) return;
+
+    const texto =
+      `Crie um resultado profissional a partir da seguinte ideia: "${ideia}". ` +
+      `Entenda o objetivo principal, acrescente detalhes relevantes, defina estilo, ` +
+      `estrutura, contexto e resultado esperado. Entregue uma resposta completa, ` +
+      `clara e pronta para ser utilizada em uma inteligência artificial.`;
+
+    setResultado(texto);
+  }
+
+  function salvarMeu() {
+    if (!resultado) return;
+    const novos = [...meus, resultado];
+    setMeus(novos);
+    localStorage.setItem("meusPrompts", JSON.stringify(novos));
+    alert("Salvo em Meus!");
+  }
+
+  const prompts = useMemo(() => {
+    let lista = [];
+
+    Object.entries(biblioteca).forEach(([cat, itens]) => {
+      itens.forEach((texto) => lista.push({ cat, texto }));
+    });
+
+    if (categoria) lista = lista.filter((p) => p.cat === categoria);
+
+    if (busca.trim()) {
+      const q = busca.toLowerCase();
+      lista = lista.filter(
+        (p) =>
+          p.texto.toLowerCase().includes(q) ||
+          p.cat.toLowerCase().includes(q)
+      );
+    }
+
+    return lista;
+  }, [busca, categoria]);
+
+  return (
+    <main className="container">
+      <header>
+        <div className="logo">🤖</div>
+        <div>
+          <h1>Prompt Pro</h1>
+          <p>Biblioteca de Prompts</p>
+        </div>
+      </header>
+
+      <nav>
+        <button onClick={() => { setTela("inicio"); setCategoria(null); }}>
+          🏠 Início
+        </button>
+        <button onClick={() => setTela("favoritos")}>⭐ Favoritos</button>
+        <button onClick={() => setTela("gerador")}>💡 Gerador</button>
+        <button onClick={() => setTela("meus")}>➕ Meus</button>
+      </nav>
+
+      {tela === "inicio" && (
+        <>
+          <section className="hero">
+            <h2>O que vamos criar hoje?</h2>
+            <p>Prompts prontos para copiar, adaptar e usar.</p>
+
+            <input
+              className="busca"
+              placeholder="🔎 Pesquisar na biblioteca..."
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+            />
+          </section>
+
+          <div className="categorias">
+            {Object.keys(biblioteca).map((cat) => (
+              <button
+                key={cat}
+                onClick={() =>
+                  setCategoria(categoria === cat ? null : cat)
+                }
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          <section className="lista">
+            <h2>{categoria || "Biblioteca"}</h2>
+
+            {prompts.map((item, i) => (
+              <article className="promptCard" key={i}>
+                <small>{item.cat}</small>
+                <p>{item.texto}</p>
+
+                <div className="acoes">
+                  <button onClick={() => copiar(item.texto)}>📋 Copiar</button>
+                  <button onClick={() => favoritar(item.texto)}>
+                    {favoritos.includes(item.texto) ? "⭐" : "☆"} Favorito
+                  </button>
+                </div>
+              </article>
+            ))}
+          </section>
+        </>
+      )}
+
+      {tela === "favoritos" && (
+        <section className="lista">
+          <h2>⭐ Favoritos</h2>
+
+          {favoritos.length === 0 && <p>Nenhum favorito ainda.</p>}
+
+          {favoritos.map((texto, i) => (
+            <article className="promptCard" key={i}>
+              <p>{texto}</p>
+              <button onClick={() => copiar(texto)}>📋 Copiar</button>
+            </article>
+          ))}
+        </section>
+      )}
+
+      {tela === "gerador" && (
+        <section className="hero">
+          <h2>💡 Gerador Inteligente</h2>
+          <p>Escreva uma ideia simples.</p>
+
+          <textarea
+            placeholder="Ex.: Quero uma arte para uma reunião sobre fé..."
+            value={ideia}
+            onChange={(e) => setIdeia(e.target.value)}
+          />
+
+          <button className="principal" onClick={gerar}>
+            ✨ Criar Prompt
+          </button>
+
+          {resultado && (
+            <article className="promptCard">
+              <p>{resultado}</p>
+              <div className="acoes">
+                <button onClick={() => copiar(resultado)}>📋 Copiar</button>
+                <button onClick={salvarMeu}>💾 Salvar</button>
+              </div>
+            </article>
+          )}
+        </section>
+      )}
+
+      {tela === "meus" && (
+        <section className="lista">
+          <h2>➕ Meus Prompts</h2>
+
+          {meus.length === 0 && <p>Nenhum prompt salvo ainda.</p>}
+
+          {meus.map((texto, i) => (
+            <article className="promptCard" key={i}>
+              <p>{texto}</p>
+              <button onClick={() => copiar(texto)}>📋 Copiar</button>
+            </article>
+          ))}
+        </section>
+      )}
+    </main>
+  );
+}
